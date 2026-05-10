@@ -19,7 +19,6 @@ def create_dashboard_page(entry_dao, wellness_service: WellnessService) -> None:
 
         with ui.column().classes('w-full items-center gap-4 p-8'):
             ui.label(f'Welcome, {username}!').classes('text-2xl font-bold')
-
             ui.label('Daily Check-in').classes('text-xl font-semibold')
 
             sleep = ui.slider(min=0, max=10, value=5).props('label-always')
@@ -41,11 +40,19 @@ def create_dashboard_page(entry_dao, wellness_service: WellnessService) -> None:
             meds = ui.checkbox('Did you take your meds today?')
             period = ui.checkbox('Are you on your period?')
 
+            with ui.column() as period_section:
+                period_pain = ui.slider(min=0, max=10, value=0).props('label-always')
+                ui.label('Period pain (0-10)')
+                period_flow = ui.slider(min=0, max=3, value=0).props('label-always')
+                ui.label('Period flow intensity (0-3)')
+            period_section.bind_visibility_from(period, 'value')
+
             result_label = ui.label('')
 
             def submit():
                 entry = DailyEntry(
                     date=date.today(),
+                    user_id=app.storage.user.get('user_id'),
                     sleep_quality=int(sleep.value),
                     stress=int(stress.value),
                     mood=int(mood.value),
@@ -57,6 +64,8 @@ def create_dashboard_page(entry_dao, wellness_service: WellnessService) -> None:
                     hobbies=int(hobbies.value),
                     meds=int(meds.value),
                     period=int(period.value),
+                    period_pain=int(period_pain.value) if period.value else None,
+                    period_flow=int(period_flow.value) if period.value else None,
                 )
                 score, advice = wellness_service.calculate_score(entry)
                 entry_dao.create(entry)
