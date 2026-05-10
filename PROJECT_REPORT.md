@@ -192,7 +192,27 @@ user_id: Optional[int] = Field(default=None, foreign_key="user.id")
 
 ---
 
-### 9. `test_integration.py` Is Empty
+### 9. SyntaxError in `Login.py` (line 1)
+
+**File:** `elife_app/ui/Login.py`
+
+A stray word was prepended to the import statement, making the file unparseable:
+
+```python
+# Wrong — SyntaxError, app will crash on startup
+Can from nicegui import ui, app
+
+# Correct
+from nicegui import ui, app
+```
+
+**Impact:** The entire NiceGUI app fails to start. Python cannot import `Login.py`, so no routes are registered and the server crashes immediately.
+
+**Fix:** Remove the `Can` prefix from line 1.
+
+---
+
+### 10. `test_integration.py` Is Empty
 
 **File:** `elife_app/tests/test_integration.py`
 
@@ -227,4 +247,5 @@ Work through issues in this order — each step builds on the previous one:
 | 6 | `elife_app/main.py` | Low — dead file | Open |
 | 7 | `ui/Login.py` | High — hardcoded auth | Open |
 | 8 | `domain/models.py` | High — missing relation | Open |
-| 9 | `tests/test_integration.py` | Low — no coverage | Open |
+| 9 | `ui/Login.py:1` | Critical — SyntaxError, app won't start | Open |
+| 10 | `tests/test_integration.py` | Low — no coverage | Open |
