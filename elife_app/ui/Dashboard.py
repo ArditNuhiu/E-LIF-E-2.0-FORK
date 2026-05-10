@@ -1,7 +1,12 @@
-from nicegui import ui, app
+import logging
 from datetime import date
+
+from nicegui import ui, app
+
 from elife_app.domain.models import DailyEntry
 from elife_app.services.wellness_service import WellnessService
+
+logger = logging.getLogger(__name__)
 
 
 def create_dashboard_page(entry_dao, wellness_service: WellnessService) -> None:
@@ -14,6 +19,7 @@ def create_dashboard_page(entry_dao, wellness_service: WellnessService) -> None:
             return
 
         def logout() -> None:
+            logger.debug("User '%s' logged out", username)
             app.storage.user.clear()
             ui.navigate.to('/')
 
@@ -69,6 +75,10 @@ def create_dashboard_page(entry_dao, wellness_service: WellnessService) -> None:
                 )
                 score, advice = wellness_service.calculate_score(entry)
                 entry_dao.create(entry)
+                logger.debug(
+                    "Check-in submitted — user_id: %s, date: %s, score: %s",
+                    entry.user_id, entry.date, score
+                )
                 result_label.text = f'Your wellness score: {score}\n' + '\n'.join(advice)
 
             ui.button('Submit', on_click=submit)
