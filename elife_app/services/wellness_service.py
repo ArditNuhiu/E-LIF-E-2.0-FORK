@@ -1,9 +1,4 @@
 from elife_app.domain.models import DailyEntry
-import sys
-from pathlib import Path
-
-# Add workspace root to path so absolute imports work
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
 class WellnessService:
@@ -17,8 +12,11 @@ class WellnessService:
             entry.hobbies * 10 +
             entry.meds * 10 +
             min(entry.steps // 5000, 10) +
-            min(int(entry.water_intake), 10)
+            min(int(entry.water_intake), 10) -
+            entry.stress -
+            max(0, int(entry.work_hours) - 8)
         )
+        score = max(0, score)
 
         advice = []
 

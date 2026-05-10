@@ -217,3 +217,22 @@ def test_weekly_report():
 
     assert "Weekly Average Score" in result, "Report should contain title"
     assert isinstance(result, str), "Report should be a string"
+
+
+def test_high_stress_lowers_score():
+    wellness = WellnessService()
+
+    base = dict(
+        date=date(2025, 3, 1),
+        sleep_quality=7, friends=1,
+        water_intake=2.5, exercise=1, mood=7,
+        work_hours=8.0, hobbies=1, steps=8000, meds=1, period=0
+    )
+
+    low_stress = DailyEntry(**base, stress=0)
+    high_stress = DailyEntry(**base, stress=10)
+
+    score_low, _ = wellness.calculate_score(low_stress)
+    score_high, _ = wellness.calculate_score(high_stress)
+
+    assert score_low > score_high, "High stress should produce a lower score"
