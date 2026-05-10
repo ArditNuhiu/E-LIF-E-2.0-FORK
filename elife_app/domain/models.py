@@ -1,7 +1,6 @@
 from typing import Optional
 from datetime import date
 from sqlmodel import SQLModel, Field
-# Use Python 3.11.15 for sqlmodel otherwise an error will occur when running the app.
 
 
 class User(SQLModel, table=True):
@@ -13,6 +12,7 @@ class User(SQLModel, table=True):
 
 class DailyEntry(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
     date: date
     sleep_quality: int = Field(ge=0, le=10)
     stress: int = Field(ge=0, le=10)
@@ -25,8 +25,6 @@ class DailyEntry(SQLModel, table=True):
     steps: int = Field(ge=0, le=50000)
     meds: int = Field(ge=0, le=1)
     period: int = Field(ge=0, le=1)
-    period_pain: Optional[int] = Field(
-        default=None, ge=0, le=10)  # Only relevant if period == 1
-    period_flow: Optional[int] = Field(
-        default=None, ge=0, le=3)  # Only relevant if period == 1
+    period_pain: Optional[int] = Field(default=None, ge=0, le=10)
+    period_flow: Optional[int] = Field(default=None, ge=0, le=3)
     score: int = Field(default=0)
