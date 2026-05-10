@@ -57,6 +57,13 @@ dmypy.json
 # VS Code
 .vscode/
 
+# Claude Code
+.claude/
+CLAUDE.md
+
+# NiceGUI storage
+.nicegui/
+
 #Draw.io
 *.dtmp
 *.drawio.bkp
