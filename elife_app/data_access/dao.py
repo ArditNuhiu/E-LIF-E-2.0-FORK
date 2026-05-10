@@ -1,12 +1,14 @@
-
 from __future__ import annotations
 
+import logging
 from typing import List, Optional
 
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
 from ..domain.models import DailyEntry, User
+
+logger = logging.getLogger(__name__)
 
 
 class BaseDAO:
@@ -20,10 +22,12 @@ class BaseDAO:
 class EntryDAO(BaseDAO):
 
     def create(self, entry: DailyEntry) -> DailyEntry:
+        logger.debug("Creating entry for user_id: %s, date: %s", entry.user_id, entry.date)
         with self.session() as session:
             session.add(entry)
             session.commit()
             session.refresh(entry)
+            logger.debug("Entry created with id: %s, score: %s", entry.id, entry.score)
             return entry
 
     def list_all(self) -> List[DailyEntry]:
@@ -45,5 +49,11 @@ class UserDAO(BaseDAO):
             return user
 
     def get_by_username(self, username: str) -> Optional[User]:
+        logger.debug("Looking up user: %s", username)
         with self.session() as session:
-            return session.exec(select(User).where(User.username == username)).first()
+            user = session.exec(select(User).where(User.username == username)).first()
+            if user:
+                logger.debug("User '%s' found", username)
+            else:
+                logger.debug("User '%s' not found", username)
+            return user
