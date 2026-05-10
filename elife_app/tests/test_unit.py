@@ -236,3 +236,22 @@ def test_high_stress_lowers_score():
     score_high, _ = wellness.calculate_score(high_stress)
 
     assert score_low > score_high, "High stress should produce a lower score"
+
+
+def test_setup_logging_configures_two_handlers(tmp_path, monkeypatch):
+    import logging
+    from elife_app.logging_config import setup_logging
+
+    monkeypatch.chdir(tmp_path)
+
+    root = logging.getLogger()
+    original_handlers = root.handlers[:]
+    root.handlers.clear()
+
+    logger = setup_logging()
+
+    assert (tmp_path / "logs").is_dir(), "logs/ directory should be created"
+    assert len(logger.handlers) == 2, "Should have StreamHandler and FileHandler"
+
+    root.handlers.clear()
+    root.handlers.extend(original_handlers)

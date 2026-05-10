@@ -67,3 +67,6 @@ CLAUDE.md
 #Draw.io
 *.dtmp
 *.drawio.bkp
+
+# Logs
+logs/
