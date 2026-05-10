@@ -55,6 +55,51 @@ The app uses a layered MVC structure. `ElifeApplication` (`elife_app/application
 
 **Layer flow:** UI pages → DAO (data access) → Database (SQLite)
 
+### Application Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Login as Login Page (/)
+    participant Dashboard as Dashboard (/dashboard)
+    participant Service as WellnessService
+    participant UserDAO
+    participant EntryDAO
+    participant DB as SQLite DB
+
+    Note over Login, DB: App Startup
+    Login->>UserDAO: create_login_page(user_dao)
+    Dashboard->>EntryDAO: create_dashboard_page(entry_dao, service)
+    UserDAO->>DB: seed default admin user (if none exists)
+
+    Note over User, DB: Login Flow
+    User->>Login: enter username + password
+    Login->>UserDAO: get_by_username(username)
+    UserDAO->>DB: SELECT user WHERE username=?
+    DB-->>UserDAO: User or None
+    alt credentials valid
+        UserDAO-->>Login: User
+        Login->>Login: store username + user_id in session
+        Login-->>User: redirect to /dashboard
+    else credentials invalid
+        Login-->>User: notify "Wrong username or password"
+    end
+
+    Note over User, DB: Daily Check-in Flow
+    User->>Dashboard: fill in health data + Submit
+    Dashboard->>Service: calculate_score(entry)
+    Service-->>Dashboard: score, advice
+    Dashboard->>EntryDAO: create(entry)
+    EntryDAO->>DB: INSERT DailyEntry (with user_id, score)
+    DB-->>EntryDAO: saved entry
+    Dashboard-->>User: display score + advice
+
+    Note over User, DB: Logout Flow
+    User->>Dashboard: click Logout
+    Dashboard->>Dashboard: clear session storage
+    Dashboard-->>User: redirect to /
+```
+
 ### Key Files
 
 | File | Role |
