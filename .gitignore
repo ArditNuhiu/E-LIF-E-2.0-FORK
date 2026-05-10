@@ -57,6 +57,9 @@ dmypy.json
 # VS Code
 .vscode/
 
+# PyCharm
+.idea/
+
 # Claude Code
 .claude/
 CLAUDE.md
