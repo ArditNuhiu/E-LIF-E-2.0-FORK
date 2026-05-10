@@ -1,4 +1,4 @@
-from nicegui import ui, app
+Can from nicegui import ui, app
 
 
 def create_login_page() -> None:
