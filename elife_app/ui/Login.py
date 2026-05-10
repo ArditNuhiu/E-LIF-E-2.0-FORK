@@ -1,5 +1,9 @@
+import logging
+
 from nicegui import ui, app
 from elife_app.data_access.dao import UserDAO
+
+logger = logging.getLogger(__name__)
 
 
 def create_login_page(user_dao: UserDAO) -> None:
@@ -16,12 +20,15 @@ def create_login_page(user_dao: UserDAO) -> None:
                     username = username_input.value
                     password = password_input.value
 
+                    logger.debug("Login attempt for username: %s", username)
                     user = user_dao.get_by_username(username)
                     if user and user.password == password:
+                        logger.debug("Login successful for username: %s", username)
                         app.storage.user['username'] = user.username
                         app.storage.user['user_id'] = user.id
                         ui.navigate.to('/dashboard')
                     else:
+                        logger.warning("Failed login attempt for username: %s", username)
                         ui.notify('Wrong username or password', color='negative')
 
                 ui.button('Login', on_click=login).classes('w-full')
